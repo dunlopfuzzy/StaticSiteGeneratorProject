@@ -1,25 +1,32 @@
-import os, shutil
-from textnode import TextNode, TextType
+import os
+import shutil
+import sys
+
 from copy_static import copy_content
-from generate_page import generate_page, generate_pages_recursive
-#print("hello world")
+from generate_page import generate_pages_recursive
+
+
+dir_path_static = "./static"
+dir_path_public = "./docs"
+dir_path_content = "./content"
+template_path = "./template.html"
+default_basepath = "/"
 
 
 def main():
-    source_dir = "./static"
-    dist_dir = "./public"
+    basepath = default_basepath
+    if len(sys.argv) > 1:
+        basepath = sys.argv[1]
 
-    if os.path.exists(dist_dir):
-        shutil.rmtree(os.path.join(dist_dir))
-    
-    print(f"copying static files from {source_dir} to {dist_dir}")
-    copy_content(source_dir, dist_dir)
+    print("Deleting public directory...")
+    if os.path.exists(dir_path_public):
+        shutil.rmtree(dir_path_public)
 
-    dir_content_path = "content"
-    template_path = "template.html"
-    dest_dir_path = "public"
-    generate_pages_recursive(dir_content_path, template_path, dest_dir_path)
+    print("Copying static files to public directory...")
+    copy_content(dir_path_static, dir_path_public)
 
+    print("Generating content...")
+    generate_pages_recursive(dir_path_content, template_path, dir_path_public, basepath)
 
 
 main()
